@@ -26,13 +26,16 @@ export PS4='${BASH_SOURCE}@${LINENO}(${FUNCNAME[0]}): '
 GEM_RE='([^0-9].*)-([0-9].*)'
 set -e
 
+# Debug for now
+set -x
+
 readonly currdir="$PWD"
 export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
 # Location for caches that should not be erased between runs
-[[ $CACHE_DIR ]] || CACHE_DIR="$HOME/.cache/digitalrebar/sledgehammer"
-[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="$HOME/.cache/digitalrebar/tftpboot/discovery"
-[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="$HOME/.cache/digitalrebar/tftpboot/sledgehammer"
+[[ $CACHE_DIR ]] || CACHE_DIR="cache/digitalrebar/sledgehammer"
+[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="cache/digitalrebar/tftpboot/discovery"
+[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="cache/digitalrebar/tftpboot/sledgehammer"
 [[ $CHROOT ]] || CHROOT="$CACHE_DIR/chroot"
 [[ $SLEDGEHAMMER_LIVECD_CACHE ]] || SLEDGEHAMMER_LIVECD_CACHE="$CACHE_DIR/livecd_cache"
 [[ $SYSTEM_TFTPBOOT_DIR ]] || SYSTEM_TFTPBOOT_DIR="/mnt/tftpboot"
@@ -58,6 +61,11 @@ cleanup() {
 }
 
 cleanup
+
+die() {
+    printf "%s\n" "$@" >&2
+    exit 1
+}
 
 mkdir -p "$CACHE_DIR" "$CHROOT" "$SLEDGEHAMMER_PXE_DIR" \
     "$SLEDGEHAMMER_IMAGE_DIR" "$SLEDGEHAMMER_LIVECD_CACHE"
@@ -198,11 +206,6 @@ else
     unset USE_PROXY PROXY_HOST PROXY_PORT PROXY_USER PROXY_PASS
 fi
 
-die() {
-    printf "%s\n" "$@" >&2
-    exit 1
-}
-
 debug() {
     printf "%s\n" "$@" >&2
 }
@@ -337,7 +340,7 @@ setup_sledgehammer_chroot() {
             if [ "$nd" != "" ] ; then
                 d=$nd
             fi
-            mkdir -p "${CHROOT}$d"
+            sudo mkdir -p "${CHROOT}$d"
             sudo mount --bind "$d" "${CHROOT}$d"
         done
         # Eighth, run any post cmds we got earlier
