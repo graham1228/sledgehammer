@@ -54,7 +54,7 @@ cleanup() {
     while read dev fs type opts rest; do
         sudo umount -d -l "$fs"
     done < <(tac /proc/self/mounts |grep -e "sledgehammer/chroot")
-#    sudo rm -rf --one-file-system "$CHROOT"
+    sudo rm -rf --one-file-system "$CHROOT"
 }
 
 cleanup
@@ -329,11 +329,8 @@ setup_sledgehammer_chroot() {
     ls -al $file
     echo "GREG: $file - "
 
-    rpm2cpio --version
-    cpio --version
-
-            rpm2cpio "$file" | sudo cpio --extract --make-directories \
-                --no-absolute-filenames --preserve-modification-time &>/dev/null
+            rpm2cpio "$file" | sudo cpio --verbose --extract --make-directories \
+                --no-absolute-filenames --preserve-modification-time
 
     echo "GREG2: HERE: $*"
     ls -l $CHROOT/usr/lib64
