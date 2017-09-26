@@ -21,6 +21,8 @@ audit
 authconfig
 basesystem
 bash
+bsdtar
+bzip2
 bzr
 comps-extras
 coreutils
@@ -36,6 +38,7 @@ firewalld
 fuse
 fuse-libs
 fuse-ntfs-3g
+gdisk
 glibc
 glibc.i686
 gzip
