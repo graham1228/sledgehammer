@@ -328,9 +328,10 @@ setup_sledgehammer_chroot() {
     echo "GREG: $file - "
     ls -al $file
     echo "GREG: $file - "
+    
 
             rpm2cpio "$file" | sudo cpio --verbose --extract --make-directories \
-                --no-absolute-filenames --preserve-modification-time
+                --no-absolute-filenames --preserve-modification-time -u
 
     echo "GREG2: HERE: $*"
     ls -l $CHROOT/usr/lib64
