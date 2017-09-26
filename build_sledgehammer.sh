@@ -214,6 +214,11 @@ in_chroot() {
     echo "GREG:"
     ls -l $CHROOT/bin/bash
     echo "GREG: HERE2"
+    ls -l $CHROOT/tmp
+    echo "GREG: HERE3"
+    uname -a
+    echo "GREG: HERE4"
+
     sudo -H chroot "$CHROOT" \
         /bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
 }
