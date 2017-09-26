@@ -211,7 +211,7 @@ debug() {
 in_chroot() {
     echo "GREG: HERE: $*"
     ls -l $CHROOT
-    echo "GREG:
+    echo "GREG:"
     ls -l $CHROOT/bin/bash
     echo "GREG: HERE2"
     sudo -H chroot "$CHROOT" \
