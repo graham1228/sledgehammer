@@ -218,9 +218,11 @@ in_chroot() {
     echo "GREG: HERE3"
     uname -a
     echo "GREG: HERE4"
+    id
+    echo "GREG: HERE5"
 
     sudo -H chroot "$CHROOT" \
-        /bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
+        /usr/bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
 }
 
 # Install some packages in the chroot environment.
