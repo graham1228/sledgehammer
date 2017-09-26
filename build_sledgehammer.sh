@@ -226,7 +226,7 @@ in_chroot() {
     chroot --version
 
 
-    sudo -H chroot "$CHROOT" \
+    sudo /usr/sbin/chroot "$CHROOT" \
         /usr/bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
 }
 
