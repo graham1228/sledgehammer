@@ -223,7 +223,7 @@ in_chroot() {
 
     which chroot
     ls -al `which chroot`
-    chroot --version
+    chroot --help
 
     sudo -H chroot "$CHROOT" /usr/sbin/ldconfig
 
