@@ -71,6 +71,10 @@ if ! which cpio &>/dev/null; then
     die "Cannot find cpio, we cannot proceed."
 fi
 
+if ! which bsdtar &>/dev/null; then
+    die "Cannot find bsdtar, we cannot proceed."
+fi
+
 if ! which rpm rpm2cpio &>/dev/null; then
     die "Cannot find rpm and rpm2cpio, we cannot proceed."
 fi
@@ -325,16 +329,11 @@ setup_sledgehammer_chroot() {
         for file in filesystem*.rpm basesystem*.rpm *.rpm; do
             debug "Extracting $file"
 
-    echo "GREG: $file - "
-    ls -al $file
-    echo "GREG: $file - "
-    
-
-            rpm2cpio "$file" | sudo cpio --verbose --extract --make-directories \
-                --no-absolute-filenames --preserve-modification-time -u
+            rpm2cpio "$file" | sudo bsdtar -U -xvf -
 
     echo "GREG2: HERE: $*"
     ls -l $CHROOT/usr/lib64
+    ls -l $CHROOT/lib64
     ls -l $CHROOT/bin/bash
     echo "GREG2: HERE2"
 
