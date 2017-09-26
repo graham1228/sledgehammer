@@ -210,8 +210,11 @@ debug() {
 # Run a command in our chroot environment.
 in_chroot() {
     echo "GREG: HERE: $*"
+    ls -l $CHROOT
     ls -l $CHROOT/lib
     ls -l $CHROOT/lib64
+    ls -l $CHROOT/usr/lib
+    ls -l $CHROOT/usr/lib64
     ls -l $CHROOT/bin/bash
     echo "GREG: HERE2"
 
