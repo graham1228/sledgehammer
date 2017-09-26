@@ -26,16 +26,13 @@ export PS4='${BASH_SOURCE}@${LINENO}(${FUNCNAME[0]}): '
 GEM_RE='([^0-9].*)-([0-9].*)'
 set -e
 
-# Debug for now
-set -x
-
 readonly currdir="$PWD"
 export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
 # Location for caches that should not be erased between runs
-[[ $CACHE_DIR ]] || CACHE_DIR="cache/digitalrebar/sledgehammer"
-[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="cache/digitalrebar/tftpboot/discovery"
-[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="cache/digitalrebar/tftpboot/sledgehammer"
+[[ $CACHE_DIR ]] || CACHE_DIR="`pwd`/cache/digitalrebar/sledgehammer"
+[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="`pwd`/cache/digitalrebar/tftpboot/discovery"
+[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="`pwd`/cache/digitalrebar/tftpboot/sledgehammer"
 [[ $CHROOT ]] || CHROOT="$CACHE_DIR/chroot"
 [[ $SLEDGEHAMMER_LIVECD_CACHE ]] || SLEDGEHAMMER_LIVECD_CACHE="$CACHE_DIR/livecd_cache"
 [[ $SYSTEM_TFTPBOOT_DIR ]] || SYSTEM_TFTPBOOT_DIR="/mnt/tftpboot"
@@ -72,6 +69,10 @@ mkdir -p "$CACHE_DIR" "$CHROOT" "$SLEDGEHAMMER_PXE_DIR" \
 
 if ! which cpio &>/dev/null; then
     die "Cannot find cpio, we cannot proceed."
+fi
+
+if ! which bsdtar &>/dev/null; then
+    die "Cannot find bsdtar, we cannot proceed."
 fi
 
 if ! which rpm rpm2cpio &>/dev/null; then
@@ -213,7 +214,7 @@ debug() {
 # Run a command in our chroot environment.
 in_chroot() {
     sudo -H chroot "$CHROOT" \
-        /bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
+        /usr/bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
 }
 
 # Install some packages in the chroot environment.
@@ -323,15 +324,31 @@ setup_sledgehammer_chroot() {
         curl -sfL "${files[@]}" || exit 1
         for file in filesystem*.rpm basesystem*.rpm *.rpm; do
             debug "Extracting $file"
-            rpm2cpio "$file" | sudo cpio --extract --make-directories \
-                --no-absolute-filenames --preserve-modification-time &>/dev/null
+
+            rpm2cpio "$file" | sudo bsdtar -P -xf -
+
             if [[ $file =~ (centos|redhat)-release ]]; then
                 sudo mkdir -p "$CHROOT/tmp"
                 sudo cp "$file" "$CHROOT/tmp/${file##*/}"
                 postcmds+=("/bin/rpm -ivh --force --nodeps /tmp/${file##*/}")
             fi
-            rm "$file"
+            sudo rm -f "$file"
         done
+
+        # Six and half - refix links
+        cp -R bin/* usr/bin
+        cp -R sbin/* usr/sbin
+        cp -R lib/* usr/lib
+        cp -R lib64/* usr/lib64
+        rm -rf bin
+        rm -rf lib
+        rm -rf lib64
+        rm -rf sbin
+        ln -s usr/bin bin
+        ln -s usr/sbin sbin
+        ln -s usr/lib lib
+        ln -s usr/lib64 lib64
+
         # Seventh, fix up the chroot so that it is fully functional.
         sudo cp /etc/resolv.conf "$CHROOT/etc/resolv.conf"
         for d in /proc /sys /dev /dev/pts /dev/shm; do
@@ -669,7 +686,7 @@ if [[ -f $SLEDGEHAMMER_IMAGE_DIR/sledgehammer-$signature.tar ]]; then
     echo "New sledgehammer image in $SLEDGEHAMMER_IMAGE_DIR"
     echo "It has signature $signature"
     echo "Moving to publish to aws."
-    mkdir -p rackn-sledgehammer/sledgehammer/$signature"
+    mkdir -p rackn-sledgehammer/sledgehammer/$signature
     cp -r $SLEDGEHAMMER_IMAGE_DIR/* rackn-sledgehammer/sledgehammer/$signature
     exit 0
 else

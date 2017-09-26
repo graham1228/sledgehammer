@@ -2,7 +2,7 @@ lang: C
 dist: trusty
 sudo: required
 script:
-- sudo apt-get install -y rpm cpio rpm2cpio
+- sudo apt-get install -y rpm cpio rpm2cpio bsdtar
 - ./build_sledgehammer.sh
 notifications:
   slack:
