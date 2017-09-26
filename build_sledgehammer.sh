@@ -324,9 +324,13 @@ setup_sledgehammer_chroot() {
         curl -sfL "${files[@]}" || exit 1
         for file in filesystem*.rpm basesystem*.rpm *.rpm; do
             debug "Extracting $file"
+
     echo "GREG: $file - "
     ls -al $file
     echo "GREG: $file - "
+
+    rpm2cpio --version
+    cpio --version
 
             rpm2cpio "$file" | sudo cpio --extract --make-directories \
                 --no-absolute-filenames --preserve-modification-time &>/dev/null
