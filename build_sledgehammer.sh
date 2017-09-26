@@ -210,22 +210,10 @@ debug() {
 # Run a command in our chroot environment.
 in_chroot() {
     echo "GREG: HERE: $*"
-    ls -l $CHROOT
-    echo "GREG:"
+    ls -l $CHROOT/lib
+    ls -l $CHROOT/lib64
     ls -l $CHROOT/bin/bash
     echo "GREG: HERE2"
-    ls -l $CHROOT/tmp
-    echo "GREG: HERE3"
-    uname -a
-    echo "GREG: HERE4"
-    id
-    echo "GREG: HERE5"
-
-    which chroot
-    ls -al `which chroot`
-    chroot --help
-
-    sudo -H chroot "$CHROOT" /usr/sbin/ldconfig
 
     sudo -H chroot "$CHROOT" \
         /usr/bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
