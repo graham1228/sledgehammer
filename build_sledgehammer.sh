@@ -221,6 +221,11 @@ in_chroot() {
     id
     echo "GREG: HERE5"
 
+    which chroot
+    ls -al `which chroot`
+    chroot --version
+
+
     sudo -H chroot "$CHROOT" \
         /usr/bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
 }
