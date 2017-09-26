@@ -325,25 +325,25 @@ setup_sledgehammer_chroot() {
         for file in filesystem*.rpm basesystem*.rpm *.rpm; do
             debug "Extracting $file"
 
-            rpm2cpio "$file" | sudo bsdtar -P -xvf -
+            rpm2cpio "$file" | sudo bsdtar -P -xf -
 
             if [[ $file =~ (centos|redhat)-release ]]; then
                 sudo mkdir -p "$CHROOT/tmp"
                 sudo cp "$file" "$CHROOT/tmp/${file##*/}"
                 postcmds+=("/bin/rpm -ivh --force --nodeps /tmp/${file##*/}")
             fi
-            rm "$file"
+            sudo rm -f "$file"
         done
 
         # Six and half - refix links
-        mv bin/* usr/bin
-        mv sbin/* usr/sbin
-        mv lib/* usr/lib
-        mv lib64/* usr/lib64
-        rmdir bin
-        rmdir lib
-        rmdir lib64
-        rmdir sbin
+        cp -R bin/* usr/bin
+        cp -R sbin/* usr/sbin
+        cp -R lib/* usr/lib
+        cp -R lib64/* usr/lib64
+        rm -rf bin
+        rm -rf lib
+        rm -rf lib64
+        rm -rf sbin
         ln -s usr/bin bin
         ln -s usr/sbin sbin
         ln -s usr/lib lib
