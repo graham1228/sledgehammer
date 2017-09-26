@@ -294,8 +294,6 @@ setup_sledgehammer_chroot() {
     for pkg in "${OS_BASIC_PACKAGES[@]}"; do
         base_pkgs["$pkg"]="needed"
     done
-    # Turn off debugging for the moment
-    set +x 
     # Fourth, get a list of packages in the mirror that we will use.
     match_re='^([A-Za-z0-9._+-]+)-([0-9]+:)?([0-9a-zA-Z._]+)-([^-]+)(\.el7.*)?\.(x86_64|noarch)\.rpm'
     while read file; do
@@ -316,8 +314,6 @@ setup_sledgehammer_chroot() {
     if [[ $missing_pkgs ]]; then
         die "Not all files for CentOS chroot found." "${missing_pkgs[@]}"
     fi
-    # Turn on debugging for the moment
-    set -x 
     # Sixth, suck all of our files and install them in one go
     sudo mkdir -p "$CHROOT"
     (
@@ -329,13 +325,7 @@ setup_sledgehammer_chroot() {
         for file in filesystem*.rpm basesystem*.rpm *.rpm; do
             debug "Extracting $file"
 
-            rpm2cpio "$file" | sudo bsdtar -U -xvf -
-
-    echo "GREG2: HERE: $*"
-    ls -l $CHROOT/usr/lib64
-    ls -l $CHROOT/lib64
-    ls -l $CHROOT/bin/bash
-    echo "GREG2: HERE2"
+            rpm2cpio "$file" | sudo bsdtar -P -xvf -
 
             if [[ $file =~ (centos|redhat)-release ]]; then
                 sudo mkdir -p "$CHROOT/tmp"
@@ -344,6 +334,21 @@ setup_sledgehammer_chroot() {
             fi
             rm "$file"
         done
+
+        # Six and half - refix links
+        mv bin/* usr/bin
+        mv sbin/* usr/sbin
+        mv lib/* usr/lib
+        mv lib64/* usr/lib64
+        rmdir bin
+        rmdir lib
+        rmdir lib64
+        rmdir sbin
+        ln -s usr/bin bin
+        ln -s usr/sbin sbin
+        ln -s usr/lib lib
+        ln -s usr/lib64 lib64
+
         # Seventh, fix up the chroot so that it is fully functional.
         sudo cp /etc/resolv.conf "$CHROOT/etc/resolv.conf"
         for d in /proc /sys /dev /dev/pts /dev/shm; do
