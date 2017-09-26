@@ -1,11 +1,6 @@
-language: go
-addons:
-  apt:
-    packages:
-    - bsdtar
-sudo: true
-go:
-- 1.8
+lang: C
+dist: trusty
+sudo: required
 script:
 - ./build_sledgehammer.sh
 notifications:
