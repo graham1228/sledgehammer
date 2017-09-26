@@ -26,6 +26,9 @@ export PS4='${BASH_SOURCE}@${LINENO}(${FUNCNAME[0]}): '
 GEM_RE='([^0-9].*)-([0-9].*)'
 set -e
 
+# Debug for now
+set -x
+
 readonly currdir="$PWD"
 export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
