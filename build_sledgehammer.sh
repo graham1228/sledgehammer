@@ -26,9 +26,6 @@ export PS4='${BASH_SOURCE}@${LINENO}(${FUNCNAME[0]}): '
 GEM_RE='([^0-9].*)-([0-9].*)'
 set -e
 
-# Debug for now
-set -x
-
 readonly currdir="$PWD"
 export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
@@ -293,6 +290,8 @@ setup_sledgehammer_chroot() {
     for pkg in "${OS_BASIC_PACKAGES[@]}"; do
         base_pkgs["$pkg"]="needed"
     done
+    # Turn off debugging for the moment
+    set +x 
     # Fourth, get a list of packages in the mirror that we will use.
     match_re='^([A-Za-z0-9._+-]+)-([0-9]+:)?([0-9a-zA-Z._]+)-([^-]+)(\.el7.*)?\.(x86_64|noarch)\.rpm'
     while read file; do
@@ -313,6 +312,8 @@ setup_sledgehammer_chroot() {
     if [[ $missing_pkgs ]]; then
         die "Not all files for CentOS chroot found." "${missing_pkgs[@]}"
     fi
+    # Turn on debugging for the moment
+    set -x 
     # Sixth, suck all of our files and install them in one go
     sudo mkdir -p "$CHROOT"
     (
@@ -669,7 +670,7 @@ if [[ -f $SLEDGEHAMMER_IMAGE_DIR/sledgehammer-$signature.tar ]]; then
     echo "New sledgehammer image in $SLEDGEHAMMER_IMAGE_DIR"
     echo "It has signature $signature"
     echo "Moving to publish to aws."
-    mkdir -p rackn-sledgehammer/sledgehammer/$signature"
+    mkdir -p rackn-sledgehammer/sledgehammer/$signature
     cp -r $SLEDGEHAMMER_IMAGE_DIR/* rackn-sledgehammer/sledgehammer/$signature
     exit 0
 else
