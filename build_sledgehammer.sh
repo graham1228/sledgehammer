@@ -30,9 +30,9 @@ readonly currdir="$PWD"
 export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
 # Location for caches that should not be erased between runs
-[[ $CACHE_DIR ]] || CACHE_DIR="$HOME/.cache/digitalrebar/sledgehammer"
-[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="$HOME/.cache/digitalrebar/tftpboot/discovery"
-[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="$HOME/.cache/digitalrebar/tftpboot/sledgehammer"
+[[ $CACHE_DIR ]] || CACHE_DIR="cache/digitalrebar/sledgehammer"
+[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="cache/digitalrebar/tftpboot/discovery"
+[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="cache/digitalrebar/tftpboot/sledgehammer"
 [[ $CHROOT ]] || CHROOT="$CACHE_DIR/chroot"
 [[ $SLEDGEHAMMER_LIVECD_CACHE ]] || SLEDGEHAMMER_LIVECD_CACHE="$CACHE_DIR/livecd_cache"
 [[ $SYSTEM_TFTPBOOT_DIR ]] || SYSTEM_TFTPBOOT_DIR="/mnt/tftpboot"
@@ -57,12 +57,12 @@ cleanup() {
     sudo rm -rf --one-file-system "$CHROOT"
 }
 
-die() {
-        echo $@
-        exit 1
-}
-
 cleanup
+
+die() {
+    printf "%s\n" "$@" >&2
+    exit 1
+}
 
 mkdir -p "$CACHE_DIR" "$CHROOT" "$SLEDGEHAMMER_PXE_DIR" \
     "$SLEDGEHAMMER_IMAGE_DIR" "$SLEDGEHAMMER_LIVECD_CACHE"
@@ -202,11 +202,6 @@ if [[ $http_proxy ]]; then
 else
     unset USE_PROXY PROXY_HOST PROXY_PORT PROXY_USER PROXY_PASS
 fi
-
-die() {
-    printf "%s\n" "$@" >&2
-    exit 1
-}
 
 debug() {
     printf "%s\n" "$@" >&2
