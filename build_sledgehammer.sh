@@ -57,6 +57,11 @@ cleanup() {
     sudo rm -rf --one-file-system "$CHROOT"
 }
 
+die() {
+        echo $@
+        exit 1
+}
+
 cleanup
 
 mkdir -p "$CACHE_DIR" "$CHROOT" "$SLEDGEHAMMER_PXE_DIR" \
