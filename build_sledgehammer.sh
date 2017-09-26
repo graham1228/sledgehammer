@@ -33,9 +33,9 @@ readonly currdir="$PWD"
 export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
 # Location for caches that should not be erased between runs
-[[ $CACHE_DIR ]] || CACHE_DIR="cache/digitalrebar/sledgehammer"
-[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="cache/digitalrebar/tftpboot/discovery"
-[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="cache/digitalrebar/tftpboot/sledgehammer"
+[[ $CACHE_DIR ]] || CACHE_DIR="`pwd`/cache/digitalrebar/sledgehammer"
+[[ $SLEDGEHAMMER_PXE_DIR ]] || SLEDGEHAMMER_PXE_DIR="`pwd`/cache/digitalrebar/tftpboot/discovery"
+[[ $SLEDGEHAMMER_ARCHIVE ]] || SLEDGEHAMMER_ARCHIVE="`pwd`/cache/digitalrebar/tftpboot/sledgehammer"
 [[ $CHROOT ]] || CHROOT="$CACHE_DIR/chroot"
 [[ $SLEDGEHAMMER_LIVECD_CACHE ]] || SLEDGEHAMMER_LIVECD_CACHE="$CACHE_DIR/livecd_cache"
 [[ $SYSTEM_TFTPBOOT_DIR ]] || SYSTEM_TFTPBOOT_DIR="/mnt/tftpboot"
