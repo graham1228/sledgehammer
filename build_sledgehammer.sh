@@ -225,8 +225,9 @@ in_chroot() {
     ls -al `which chroot`
     chroot --version
 
+    sudo -H chroot "$CHROOT" /usr/sbin/ldconfig
 
-    sudo /usr/sbin/chroot "$CHROOT" \
+    sudo -H chroot "$CHROOT" \
         /usr/bin/bash -l -c "export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin; $*"
 }
 
