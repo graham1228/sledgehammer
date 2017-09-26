@@ -342,7 +342,7 @@ setup_sledgehammer_chroot() {
             if [ "$nd" != "" ] ; then
                 d=$nd
             fi
-            mkdir -p "${CHROOT}$d"
+            sudo mkdir -p "${CHROOT}$d"
             sudo mount --bind "$d" "${CHROOT}$d"
         done
         # Eighth, run any post cmds we got earlier
