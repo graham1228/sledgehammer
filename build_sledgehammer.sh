@@ -54,7 +54,7 @@ cleanup() {
     while read dev fs type opts rest; do
         sudo umount -d -l "$fs"
     done < <(tac /proc/self/mounts |grep -e "sledgehammer/chroot")
-    sudo rm -rf --one-file-system "$CHROOT"
+#    sudo rm -rf --one-file-system "$CHROOT"
 }
 
 cleanup
@@ -210,10 +210,6 @@ debug() {
 # Run a command in our chroot environment.
 in_chroot() {
     echo "GREG: HERE: $*"
-    ls -l $CHROOT
-    ls -l $CHROOT/lib
-    ls -l $CHROOT/lib64
-    ls -l $CHROOT/usr/lib
     ls -l $CHROOT/usr/lib64
     ls -l $CHROOT/bin/bash
     echo "GREG: HERE2"
@@ -335,6 +331,12 @@ setup_sledgehammer_chroot() {
             debug "Extracting $file"
             rpm2cpio "$file" | sudo cpio --extract --make-directories \
                 --no-absolute-filenames --preserve-modification-time &>/dev/null
+
+    echo "GREG2: HERE: $*"
+    ls -l $CHROOT/usr/lib64
+    ls -l $CHROOT/bin/bash
+    echo "GREG2: HERE2"
+
             if [[ $file =~ (centos|redhat)-release ]]; then
                 sudo mkdir -p "$CHROOT/tmp"
                 sudo cp "$file" "$CHROOT/tmp/${file##*/}"
