@@ -666,8 +666,8 @@ if [[ -f $SLEDGEHAMMER_IMAGE_DIR/sledgehammer-$signature.tar ]]; then
     echo "New sledgehammer image in $SLEDGEHAMMER_IMAGE_DIR"
     echo "It has signature $signature"
     echo "Moving to publish to aws."
-    mkdir -p sledgehammer
-    cp -r $SLEDGEHAMMER_IMAGE_DIR sledgehammer
+    mkdir -p rackn-sledgehammer/sledgehammer/$signature"
+    cp -r $SLEDGEHAMMER_IMAGE_DIR/* rackn-sledgehammer/sledgehammer/$signature
     exit 0
 else
     exit 1
