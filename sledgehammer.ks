@@ -192,6 +192,10 @@ python ./setup.py install
 cd ..
 rm -rf trunk.dist curtin.tgz
 
+# Install gohai
+curl -fgL -o /usr/bin/gohai https://s3-us-west-2.amazonaws.com/rackn-sledgehammer/gohai
+chmod 755 /usr/bin/gohai
+
 # Setup wimlib
 cd /usr
 tar -zxvf /root/wimlib-bin.tgz
