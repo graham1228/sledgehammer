@@ -1,0 +1,12 @@
+[Unit]
+Description=Sledgehammer startup script
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/sbin/sledgehammer-start-up.sh
+
+[Install]
+WantedBy=multi-user.target
