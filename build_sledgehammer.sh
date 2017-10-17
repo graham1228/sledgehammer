@@ -39,9 +39,6 @@ export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
 
 REBAR_DIR="${0%/*}/.."
 
-signature=$(sha1sum < <(cat "$0" "$REBAR_DIR/sledgehammer/"*) |awk '{print $1}')
-SLEDGEHAMMER_IMAGE_DIR="$SLEDGEHAMMER_ARCHIVE/$signature"
-
 cleanup() {
     set +e
     # Make sure that the loopback kernel module is loaded.
@@ -64,8 +61,7 @@ die() {
     exit 1
 }
 
-mkdir -p "$CACHE_DIR" "$CHROOT" "$SLEDGEHAMMER_PXE_DIR" \
-    "$SLEDGEHAMMER_IMAGE_DIR" "$SLEDGEHAMMER_LIVECD_CACHE"
+mkdir -p "$CACHE_DIR" "$CHROOT" "$SLEDGEHAMMER_PXE_DIR" "$SLEDGEHAMMER_LIVECD_CACHE"
 
 if ! which cpio &>/dev/null; then
     die "Cannot find cpio, we cannot proceed."
@@ -385,6 +381,18 @@ setup_sledgehammer_chroot() {
 }
 
 setup_sledgehammer_chroot
+(
+    sudo mkdir -p "$CHROOT/mnt/artifacts"
+    sudo chmod 777 "$CHROOT/mnt/artifacts"
+    cd "$CHROOT/mnt/artifacts"
+    curl -fgLO http://rackn-sledgehammer.s3-website-us-west-2.amazonaws.com/wimlib-bin.tgz
+    curl -fgLO http://rackn-sledgehammer.s3-website-us-west-2.amazonaws.com/curtin.tgz
+    curl -fgLO https://s3-us-west-2.amazonaws.com/rackn-sledgehammer/gohai
+    curl -fgLO http://download.flashrom.org/releases/flashrom-0.9.9.tar.bz2
+)
+signature=$(sha1sum < <(cat "$0" "$REBAR_DIR/sledgehammer/"* "$CHROOT/mnt/artifacts/"*) |awk '{print $1}')
+SLEDGEHAMMER_IMAGE_DIR="$SLEDGEHAMMER_ARCHIVE/$signature"
+mkdir -p "$SLEDGEHAMMER_IMAGE_DIR"
 sudo cp "$REBAR_DIR/sledgehammer/"* "$CHROOT/mnt"
 in_chroot mkdir -p /mnt/cache
 sudo mount --bind "$SLEDGEHAMMER_LIVECD_CACHE" "$CHROOT/mnt/cache"
@@ -402,7 +410,7 @@ sed "s/::SIGNATURE::/$signature/" >> "$CHROOT/mnt/stage1_init" <<"EOF"
 fail() {
     printf '%s\n' "$@"
     echo "Dropping into shell for debugging"
-    echo "Contact RackN on Gitter in the digitalrebar/core channel for debugging"
+    echo "Contact #community on rackn.slack.com channel for debugging"
     echo "Exiting the shell will reboot the system"
     /bin/ash -i
     reboot
@@ -562,14 +570,13 @@ EOF
 sed "s/::SIGNATURE::/$signature/" >> "$CHROOT/mnt/make_sledgehammer" <<"EOF"
 #!/bin/bash
 set -e
-set -x 
+set -x
 export PS4='${BASH_SOURCE}@${LINENO}(${FUNCNAME[0]}): '
 export SIGNATURE="::SIGNATURE::"
 (
     mkdir -p /mnt/flashrom
     cd /mnt/flashrom
-    curl -fgL -O http://download.flashrom.org/releases/flashrom-0.9.9.tar.bz2
-    tar xf flashrom-0.9.9.tar.bz2
+    tar xf /mnt/artifacts/flashrom-0.9.9.tar.bz2
     cd flashrom-0.9.9
     make CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no CONFIG_ENABLE_LIBUSB1_PROGRAMMERS=no
     make DESTDIR=/mnt/staged CONFIG_ENABLE_LIBUSB0_PROGRAMMERS=no CONFIG_ENABLE_LIBUSB1_PROGRAMMERS=no install
