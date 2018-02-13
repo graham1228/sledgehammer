@@ -13,6 +13,26 @@ dhcp_param() {
     [[ $(cat /var/lib/dhclient/dhclient.leases) =~ $1 ]] && echo "${BASH_REMATCH[1]}"
 }
 
+# inject some Sledgehammer specific identity info for rapid visual identification
+setup_identity() {
+    local _fingerprint _release _comment
+    local _id=$(get_param "initrd=([^ ]+)" | cut -d "/" -f 2)
+    local _uuid=$(get_param "rs\.uuid=([^ ]+)")
+    local _api=$(get_param "rs\.api=([^ ]+)")
+    _id=${_id:-"no_signature_found"}
+    _uuid=${_uuid:-"no_rs.uuid_found"}
+    _api=${_api:-"no_rs.api_found"}
+    _fingerprint="Digital Rebar: Sledgehammer $_id\nDigital Rebar: Machine UUID $_uuid"
+    _comment="# Digital Rebar Provision Sledgehammer identity info (date: `date`)"
+    _release="rs.sledgehammer=\"$_id\"\nrs.uuid=\"$_uuid\"\nrs.api=\"$_api\""
+
+    # make modififications for identifying this sledgehammer/machine
+    sed -i -e "1i $_fingerprint" -e 's/^\\S$//' /etc/issue
+    sed -i -e "1i $_fingerprint" -e 's/^\\S$//' /etc/issue.net
+    sed -i '$i export PS1="<sledgehammer> $PS1"' /etc/bashrc
+    echo "$_comment\n$_release" > /etc/sledgehammer_release
+    [[ -f /root/hammer.txt ]] && mv /root/hammer.txt /etc/motd
+}
 
 DHCPDIR=/var/lib/dhclient
 RSYSLOGSERVICE=rsyslog
@@ -32,6 +52,9 @@ if ! [[ $PROVISIONER_WEB ]]; then
     echo "This cannot happen"
     exit 1
 fi
+
+# setup our identity information
+setup_identity
 
 if [[ $(cat /proc/cmdline) =~ $bootif_re ]]; then
     MAC="${BASH_REMATCH[1]//-/:}"

@@ -109,7 +109,9 @@ zlib
 
 %post --nochroot
 
+
 cp start-up.sh "$INSTALL_ROOT/sbin/sledgehammer-start-up.sh"
+cp hammer.txt "$INSTALL_ROOT/root/hammer.txt"
 chmod +x "$INSTALL_ROOT/sbin/sledgehammer-start-up.sh"
 cp sshd_config "$INSTALL_ROOT/etc/ssh/sshd_config"
 cp sledgehammer.service "$INSTALL_ROOT/etc/systemd/system/sledgehammer.service"
@@ -153,4 +155,5 @@ chmod 755 /usr/bin/gohai
 /sbin/ldconfig
 
 rm -rf /artifacts
+
 %end
