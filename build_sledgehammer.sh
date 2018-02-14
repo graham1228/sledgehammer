@@ -392,6 +392,20 @@ setup_sledgehammer_chroot
 )
 signature=$(sha1sum < <(cat "$0" "$REBAR_DIR/sledgehammer/"* "$CHROOT/mnt/artifacts/"*) |awk '{print $1}')
 SLEDGEHAMMER_IMAGE_DIR="$SLEDGEHAMMER_ARCHIVE/$signature"
+(
+    cat > /mnt/artifacts/issue <<EOF
+Digital Rebar: Sledgehammer $signature
+Kernel \r on an \m
+
+EOF
+    cat > /mnt/artifacts/issue.net <<EOF
+Digital Rebar: Sledgehammer $signature
+Kernel \r on an \m
+EOF
+    cat > /mnt/artifacts/sledgehammer_release <<EOF
+rs.sledgehammer="$signature"
+EOF
+)
 mkdir -p "$SLEDGEHAMMER_IMAGE_DIR"
 sudo cp "$REBAR_DIR/sledgehammer/"* "$CHROOT/mnt"
 in_chroot mkdir -p /mnt/cache
