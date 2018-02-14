@@ -13,7 +13,6 @@ dhcp_param() {
     [[ $(cat /var/lib/dhclient/dhclient.leases) =~ $1 ]] && echo "${BASH_REMATCH[1]}"
 }
 
-
 DHCPDIR=/var/lib/dhclient
 RSYSLOGSERVICE=rsyslog
 

@@ -109,8 +109,10 @@ zlib
 
 %post --nochroot
 
+
 cp start-up.sh "$INSTALL_ROOT/sbin/sledgehammer-start-up.sh"
 chmod +x "$INSTALL_ROOT/sbin/sledgehammer-start-up.sh"
+cp hammer.txt "$INSTALL_ROOT/etc/motd"
 cp sshd_config "$INSTALL_ROOT/etc/ssh/sshd_config"
 cp sledgehammer.service "$INSTALL_ROOT/etc/systemd/system/sledgehammer.service"
 cp dhclient.conf "$INSTALL_ROOT/etc"
@@ -152,5 +154,12 @@ chmod 755 /usr/bin/gohai
 (cd /usr; tar -zxvf /artifacts/wimlib-bin.tgz)
 /sbin/ldconfig
 
+# Update some of the pieces to be more explicit with sledgehammer
+cp /artifacts/issue /etc/issue
+cp /artifacts/issue.net /etc/issue.net
+cp /artifacts/sledgehammer_release /etc/sledgehammer_release
+sed -i '$i export PS1="<sledgehammer> $PS1"' /etc/bashrc
+
 rm -rf /artifacts
+
 %end
