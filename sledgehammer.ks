@@ -19,6 +19,7 @@ OpenIPMI-tools
 aic94xx-firmware
 audit
 authconfig
+banner
 basesystem
 bash
 bsdtar
