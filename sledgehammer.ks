@@ -30,6 +30,7 @@ coreutils
 curl
 dhclient
 dmidecode
+dosfstools
 dpkg
 e2fsprogs
 efibootmgr

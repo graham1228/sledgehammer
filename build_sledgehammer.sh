@@ -519,7 +519,7 @@ for fs in /dev /dev/pts /proc /sys; do
     mount --bind "$fs" "/newinitramfs$fs"
 done
 
-echo /sbin/hotplug >/proc/sys/kernel/hotplug
+echo "" >/proc/sys/kernel/hotplug
 pkill udhcpc
 ip link set "$pxedev" down
 exec switch_root /newinitramfs /sbin/init
