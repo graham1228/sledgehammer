@@ -66,6 +66,7 @@ mdadm
 microcode_ctl
 mktemp
 ncurses
+nfs-utils
 ntfs-3g
 ntfsprogs
 ntp
@@ -137,7 +138,7 @@ sed -i -e 's/\(^SELINUX=\).*$/\1disabled/' /etc/selinux/config
 systemctl enable network
 # systemctl enable debug-shell.service
 systemctl disable kdump
-
+systemctl enable systemd-udev-settle.service
 systemctl enable sledgehammer.service
 
 # Setup and install curtin
