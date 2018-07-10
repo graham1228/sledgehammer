@@ -136,6 +136,7 @@ ln -sf usr/bin/bash sbin/sushell
 # Hack to really turn down SELINUX
 sed -i -e 's/\(^SELINUX=\).*$/\1disabled/' /etc/selinux/config
 systemctl enable network
+systemctl enable ntpd
 # systemctl enable debug-shell.service
 systemctl disable kdump
 systemctl enable systemd-udev-settle.service
